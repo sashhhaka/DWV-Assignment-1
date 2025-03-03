@@ -1,0 +1,11 @@
+UI TODO:
+1. Darker headers and title column (Or make title in bold)
+2. Make design with less contrast
+3. Make design in a dark mode
+3. Move the filtering search bar to the left
+4. Add option to leave initial sorting (by third clicking on the header
+
+
+Parsing TODO:
+1. Delete letters from Box Office before $
+2. Rename Box Office to Box Office Revenue

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Highest Grossing Films 💰</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #181818;
+      color: #ccc;
+      line-height: 1.6;
+      padding: 1rem;
+    }
+    header {
+      background-color: #242424;
+      border-bottom: 1px solid #333;
+      padding: 1.5rem 0;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 2rem;
+      color: #fff;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background-color: #242424;
+      padding: 2rem;
+      border: 1px solid #333;
+      border-radius: 8px;
+    }
+    .filter-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .filter-container input, .filter-container select, .filter-container .slider {
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #555;
+      border-radius: 4px;
+      background-color: #181818;
+      color: #ccc;
+      transition: border-color 0.3s;
+    }
+    .filter-container input:focus, .filter-container select:focus, .filter-container .slider:focus {
+      border-color: #888;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background-color: #333; }
+    thead th {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #444;
+      position: relative;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      width: 20%; /* Adjust column width relative to each other */
+    }
+    tbody td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #333;
+      word-wrap: break-word;
+    }
+    tbody tr:hover { background-color: #2a2a2a; }
+    .bold { font-weight: bold; }
+    .slider {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header><h1>Highest Grossing Films 💰</h1></header>
+  <div class="container">
+    <div class="filter-container">
+      <input type="text" id="filter-title" placeholder="Filter by title...">
+      <input type="range" id="filter-release-year" class="slider" min="1990" max="2025" value="1990">
+      <label for="filter-release-year">Year: <span id="year-output">1990</span></label>
+      <input type="range" id="filter-box-office" class="slider" min="0" max="10000000000" value="0">
+      <label for="filter-box-office">Revenue: <span id="revenue-output">$0B</span></label>
+      <select id="filter-director"><option value="">Filter by director...</option></select>
+      <select id="filter-country"><option value="">Filter by country...</option></select>
+    </div>
+    <table id="films-table">
+      <thead>
+        <tr>
+          <th data-sort="title">Title</th>
+          <th data-sort="release_year">Release Year</th>
+          <th data-sort="director">Director</th>
+          <th data-sort="box_office_revenue">Box Office Revenue</th>
+          <th data-sort="country">Country</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    let filmsData = [];
+    const tableBody = document.querySelector("#films-table tbody");
+    const filterTitle = document.getElementById("filter-title");
+    const filterYear = document.getElementById("filter-release-year");
+    const filterRevenue = document.getElementById("filter-box-office");
+    const filterDirector = document.getElementById("filter-director");
+    const filterCountry = document.getElementById("filter-country");
+    const yearOutput = document.getElementById("year-output");
+    const revenueOutput = document.getElementById("revenue-output");
+
+    function populateDropdowns(data) {
+      const directors = [...new Set(data.map(film => film.director))].sort();
+      const countries = [...new Set(data.map(film => film.country))].sort();
+      directors.forEach(d => filterDirector.innerHTML += `<option value="${d}">${d}</option>`);
+      countries.forEach(c => filterCountry.innerHTML += `<option value="${c}">${c}</option>`);
+    }
+
+    function formatRevenue(revenue) {
+      return `$${(parseInt(revenue.replace(/\D/g, '')) / 1e9).toFixed(1)}B`;
+    }
+
+    function renderTable(data) {
+      tableBody.innerHTML = data.map(film => `
+        <tr>
+          <td class="bold">${film.title}</td>
+          <td>${film.release_year || "N/A"}</td>
+          <td>${film.director}</td>
+          <td>${formatRevenue(film.box_office_revenue)}</td>
+          <td>${film.country}</td>
+        </tr>
+      `).join('');
+    }
+
+    function applyFilters() {
+      const titleFilter = filterTitle.value.toLowerCase();
+      const year = parseInt(filterYear.value);
+      const revenue = parseInt(filterRevenue.value);
+      const directorFilter = filterDirector.value;
+      const countryFilter = filterCountry.value;
+
+      yearOutput.textContent = year;
+      revenueOutput.textContent = `$${(revenue / 1e9).toFixed(1)}B`;
+
+      renderTable(filmsData.filter(film =>
+        film.title.toLowerCase().includes(titleFilter) &&
+        film.release_year >= year &&
+        parseInt(film.box_office_revenue.replace(/\D/g, '')) >= revenue &&
+        (!directorFilter || film.director === directorFilter) &&
+        (!countryFilter || film.country === countryFilter)
+      ));
+    }
+
+    fetch("temp/films.json")
+      .then(response => response.json())
+      .then(data => {
+        filmsData = data;
+        populateDropdowns(filmsData);
+        renderTable(filmsData);
+      })
+      .catch(error => console.error("Error loading films data:", error));
+
+    document.querySelectorAll(".filter-container input, .filter-container select").forEach(el => {
+      el.addEventListener("input", applyFilters);
+    });
+  </script>
+</body>
+</html>
