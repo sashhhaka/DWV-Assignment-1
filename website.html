@@ -1,172 +1,781 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Highest Grossing Films 💰</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: #181818;
-      color: #ccc;
-      line-height: 1.6;
-      padding: 1rem;
-    }
-    header {
-      background-color: #242424;
-      border-bottom: 1px solid #333;
-      padding: 1.5rem 0;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    header h1 {
-      margin: 0;
-      font-weight: 600;
-      font-size: 2rem;
-      color: #fff;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      background-color: #242424;
-      padding: 2rem;
-      border: 1px solid #333;
-      border-radius: 8px;
-    }
-    .filter-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-    .filter-container input, .filter-container select, .filter-container .slider {
-      padding: 0.5rem 0.75rem;
-      font-size: 1rem;
-      border: 1px solid #555;
-      border-radius: 4px;
-      background-color: #181818;
-      color: #ccc;
-      transition: border-color 0.3s;
-    }
-    .filter-container input:focus, .filter-container select:focus, .filter-container .slider:focus {
-      border-color: #888;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    thead { background-color: #333; }
-    thead th {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #444;
-      position: relative;
-      font-weight: 600;
-      text-align: left;
-      cursor: pointer;
-      width: 20%; /* Adjust column width relative to each other */
-    }
-    tbody td {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid #333;
-      word-wrap: break-word;
-    }
-    tbody tr:hover { background-color: #2a2a2a; }
-    .bold { font-weight: bold; }
-    .slider {
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <header><h1>Highest Grossing Films 💰</h1></header>
-  <div class="container">
-    <div class="filter-container">
-      <input type="text" id="filter-title" placeholder="Filter by title...">
-      <input type="range" id="filter-release-year" class="slider" min="1990" max="2025" value="1990">
-      <label for="filter-release-year">Year: <span id="year-output">1990</span></label>
-      <input type="range" id="filter-box-office" class="slider" min="0" max="10000000000" value="0">
-      <label for="filter-box-office">Revenue: <span id="revenue-output">$0B</span></label>
-      <select id="filter-director"><option value="">Filter by director...</option></select>
-      <select id="filter-country"><option value="">Filter by country...</option></select>
-    </div>
-    <table id="films-table">
-      <thead>
-        <tr>
-          <th data-sort="title">Title</th>
-          <th data-sort="release_year">Release Year</th>
-          <th data-sort="director">Director</th>
-          <th data-sort="box_office_revenue">Box Office Revenue</th>
-          <th data-sort="country">Country</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <script>
-    let filmsData = [];
-    const tableBody = document.querySelector("#films-table tbody");
-    const filterTitle = document.getElementById("filter-title");
-    const filterYear = document.getElementById("filter-release-year");
-    const filterRevenue = document.getElementById("filter-box-office");
-    const filterDirector = document.getElementById("filter-director");
-    const filterCountry = document.getElementById("filter-country");
-    const yearOutput = document.getElementById("year-output");
-    const revenueOutput = document.getElementById("revenue-output");
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--  <title>Highest Grossing Films💲</title>-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">-->
+<!--  <style>-->
+<!--    *, *::before, *::after { box-sizing: border-box; }-->
+<!--    body {-->
+<!--      margin: 0;-->
+<!--      font-family: 'Inter', sans-serif;-->
+<!--      background-color: #181818;-->
+<!--      color: #ccc;-->
+<!--      line-height: 1.6;-->
+<!--      padding: 1rem;-->
+<!--    }-->
+<!--    header {-->
+<!--      background-color: #242424;-->
+<!--      border-bottom: 1px solid #333;-->
+<!--      padding: 1.5rem 0;-->
+<!--      text-align: center;-->
+<!--      margin-bottom: 2rem;-->
+<!--    }-->
+<!--    header h1 {-->
+<!--      margin: 0;-->
+<!--      font-weight: 600;-->
+<!--      font-size: 2rem;-->
+<!--      color: #fff;-->
+<!--    }-->
+<!--    .container {-->
+<!--      max-width: 1100px;-->
+<!--      margin: 0 auto;-->
+<!--      background-color: #242424;-->
+<!--      padding: 2rem;-->
+<!--      border: 1px solid #333;-->
+<!--      border-radius: 8px;-->
+<!--    }-->
+<!--    .filter-container {-->
+<!--      display: flex;-->
+<!--      flex-direction: column;-->
+<!--      gap: 1rem;-->
+<!--      margin-bottom: 1.5rem;-->
+<!--    }-->
+<!--    .filter-row {-->
+<!--      display: flex;-->
+<!--      align-items: center;-->
+<!--      gap: 1rem;-->
+<!--      flex-wrap: wrap;-->
+<!--    }-->
+<!--    .filter-container input,-->
+<!--    .filter-container select {-->
+<!--      padding: 0.5rem;-->
+<!--      font-size: 1rem;-->
+<!--      border: 1px solid #555;-->
+<!--      border-radius: 4px;-->
+<!--      background-color: #181818;-->
+<!--      color: #ccc;-->
+<!--      transition: border-color 0.3s;-->
+<!--    }-->
+<!--    .filter-container input:focus,-->
+<!--    .filter-container select:focus {-->
+<!--      border-color: #888;-->
+<!--    }-->
 
-    function populateDropdowns(data) {
-      const directors = [...new Set(data.map(film => film.director))].sort();
-      const countries = [...new Set(data.map(film => film.country))].sort();
-      directors.forEach(d => filterDirector.innerHTML += `<option value="${d}">${d}</option>`);
-      countries.forEach(c => filterCountry.innerHTML += `<option value="${c}">${c}</option>`);
-    }
+<!--    /* Input wrapper for clear button positioning */-->
+<!--    .input-wrapper {-->
+<!--      position: relative;-->
+<!--      display: flex;-->
+<!--      align-items: center;-->
+<!--    }-->
 
-    function formatRevenue(revenue) {
-      return `$${(parseInt(revenue.replace(/\D/g, '')) / 1e9).toFixed(1)}B`;
-    }
+<!--    /* Updated clear button styles with better positioning */-->
+<!--    .clear-input {-->
+<!--      position: absolute;-->
+<!--      right: 25px; /* Increased from 10px to avoid overlap with dropdown arrow */-->
+<!--      background: none;-->
+<!--      border: none;-->
+<!--      color: #888;-->
+<!--      cursor: pointer;-->
+<!--      display: flex;-->
+<!--      align-items: center;-->
+<!--      justify-content: center;-->
+<!--      width: 16px;-->
+<!--      height: 16px;-->
+<!--      font-size: 16px;-->
+<!--      padding: 0;-->
+<!--      visibility: hidden;-->
+<!--    }-->
 
-    function renderTable(data) {
-      tableBody.innerHTML = data.map(film => `
-        <tr>
-          <td class="bold">${film.title}</td>
-          <td>${film.release_year || "N/A"}</td>
-          <td>${film.director}</td>
-          <td>${formatRevenue(film.box_office_revenue)}</td>
-          <td>${film.country}</td>
-        </tr>
-      `).join('');
-    }
+<!--    .clear-input:hover {-->
+<!--      color: #fff;-->
+<!--    }-->
 
-    function applyFilters() {
-      const titleFilter = filterTitle.value.toLowerCase();
-      const year = parseInt(filterYear.value);
-      const revenue = parseInt(filterRevenue.value);
-      const directorFilter = filterDirector.value;
-      const countryFilter = filterCountry.value;
+<!--    /* Show clear button only when input has content */-->
+<!--    .input-wrapper input:not(:placeholder-shown) + .clear-input {-->
+<!--      visibility: visible;-->
+<!--    }-->
 
-      yearOutput.textContent = year;
-      revenueOutput.textContent = `$${(revenue / 1e9).toFixed(1)}B`;
+<!--    /* Add a bit more padding to the input to ensure text doesn't overlap with buttons */-->
+<!--    .input-wrapper input {-->
+<!--      padding-right: 45px; /* Increased padding to accommodate both the clear button and dropdown arrow */-->
+<!--    }-->
 
-      renderTable(filmsData.filter(film =>
-        film.title.toLowerCase().includes(titleFilter) &&
-        film.release_year >= year &&
-        parseInt(film.box_office_revenue.replace(/\D/g, '')) >= revenue &&
-        (!directorFilter || film.director === directorFilter) &&
-        (!countryFilter || film.country === countryFilter)
-      ));
-    }
+<!--    /* Custom two-handle slider styles */-->
+<!--    .range-slider {-->
+<!--      position: relative;-->
+<!--      width: 250px;-->
+<!--      height: 30px;-->
+<!--      margin: 10px 0;-->
+<!--    }-->
+<!--    .range-slider > div {-->
+<!--      position: relative;-->
+<!--      height: 30px;-->
+<!--      width: 100%;-->
+<!--    }-->
+<!--    .range-slider-val-range {-->
+<!--      position: absolute;-->
+<!--      height: 6px;-->
+<!--      background: #888;-->
+<!--      border-radius: 3px;-->
+<!--      top: 50%;-->
+<!--      transform: translateY(-50%);-->
+<!--      pointer-events: none;-->
+<!--    }-->
+<!--    .range-slider-handle {-->
+<!--      position: absolute;-->
+<!--      top: 50%;-->
+<!--      transform: translate(-50%, -50%);-->
+<!--      height: 16px;-->
+<!--      width: 16px;-->
+<!--      background: #ccc;-->
+<!--      border-radius: 50%;-->
+<!--      cursor: pointer;-->
+<!--      z-index: 10;-->
+<!--    }-->
+<!--    .range-slider-handle:hover {-->
+<!--      background: #fff;-->
+<!--    }-->
 
-    fetch("temp/films.json")
-      .then(response => response.json())
-      .then(data => {
-        filmsData = data;
-        populateDropdowns(filmsData);
-        renderTable(filmsData);
-      })
-      .catch(error => console.error("Error loading films data:", error));
+<!--    /* Improved range value display */-->
+<!--    .range-values-display {-->
+<!--      display: flex;-->
+<!--      justify-content: space-between;-->
+<!--      width: 250px;-->
+<!--      margin-top: 5px;-->
+<!--      font-size: 0.85rem;-->
+<!--      color: #aaa;-->
+<!--    }-->
+<!--    .range-value {-->
+<!--      padding: 2px 5px;-->
+<!--      background: #333;-->
+<!--      border-radius: 3px;-->
+<!--      color: #fff;-->
+<!--    }-->
 
-    document.querySelectorAll(".filter-container input, .filter-container select").forEach(el => {
-      el.addEventListener("input", applyFilters);
-    });
-  </script>
-</body>
-</html>
+<!--    /* Hide default appearance for range inputs */-->
+<!--    .range-slider input[type="range"] {-->
+<!--      position: absolute;-->
+<!--      width: 100%;-->
+<!--      opacity: 0;-->
+<!--      height: 30px;-->
+<!--      top: 0;-->
+<!--      left: 0;-->
+<!--      z-index: 5;-->
+<!--    }-->
+
+<!--    .filter-label {-->
+<!--      min-width: 80px;-->
+<!--      font-weight: 600;-->
+<!--    }-->
+
+<!--    .footnote {-->
+<!--      font-size: 0.8rem;-->
+<!--      color: #888;-->
+<!--      margin-top: 0.5rem;-->
+<!--    }-->
+
+<!--    /* Table styles */-->
+<!--    table {-->
+<!--      width: 100%;-->
+<!--      border-collapse: collapse;-->
+<!--      margin-top: 1.5rem;-->
+<!--    }-->
+<!--    thead { background-color: #333; }-->
+<!--    thead th {-->
+<!--      padding: 0.75rem 1rem;-->
+<!--      border-bottom: 1px solid #444;-->
+<!--      position: relative;-->
+<!--      font-weight: 600;-->
+<!--      text-align: left;-->
+<!--      cursor: pointer;-->
+<!--      width: 20%;-->
+<!--    }-->
+<!--    thead th .sort-indicator {-->
+<!--      margin-left: 0.5rem;-->
+<!--      font-size: 0.8rem;-->
+<!--    }-->
+<!--    tbody td {-->
+<!--      padding: 0.75rem 1rem;-->
+<!--      border-bottom: 1px solid #333;-->
+<!--      word-wrap: break-word;-->
+<!--    }-->
+<!--    tbody tr:hover { background-color: #2a2a2a; }-->
+<!--    .bold { font-weight: bold; }-->
+
+<!--    /* Responsive tables */-->
+<!--    @media (max-width: 768px) {-->
+<!--      .filter-row {-->
+<!--        flex-direction: column;-->
+<!--        align-items: flex-start;-->
+<!--      }-->
+<!--      .range-slider, .range-values-display {-->
+<!--        width: 100%;-->
+<!--      }-->
+<!--      thead th, tbody td {-->
+<!--        padding: 0.5rem;-->
+<!--      }-->
+<!--    }-->
+
+<!--    /* Stats summary */-->
+<!--    .stats-summary {-->
+<!--      background-color: #333;-->
+<!--      padding: 1rem;-->
+<!--      border-radius: 4px;-->
+<!--      margin-top: 1rem;-->
+<!--      display: flex;-->
+<!--      justify-content: space-between;-->
+<!--      flex-wrap: wrap;-->
+<!--    }-->
+<!--    .stat-item {-->
+<!--      margin: 0.5rem;-->
+<!--      text-align: center;-->
+<!--    }-->
+<!--    .stat-value {-->
+<!--      font-size: 1.2rem;-->
+<!--      font-weight: 600;-->
+<!--      color: #fff;-->
+<!--    }-->
+<!--    .stat-label {-->
+<!--      font-size: 0.8rem;-->
+<!--      color: #aaa;-->
+<!--    }-->
+<!--  </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--  <header><h1>Highest Grossing Films💲</h1></header>-->
+<!--  <div class="container">-->
+<!--    <div class="filter-container">-->
+<!--      &lt;!&ndash; Title Filter with Clear Button &ndash;&gt;-->
+<!--      <div class="filter-row">-->
+<!--        <div class="filter-label">Title:</div>-->
+<!--        <div class="input-wrapper">-->
+<!--          <input type="text" id="filter-title" placeholder="Filter by title...">-->
+<!--          <button class="clear-input" id="clear-title" title="Clear title filter">✕</button>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Year Slider &ndash;&gt;-->
+<!--      <div class="filter-row">-->
+<!--        <div class="filter-label">Year:</div>-->
+<!--        <div>-->
+<!--          <div id="yearRangeSlider" class="range-slider">-->
+<!--            <div>-->
+<!--              <div class="range-slider-val-range"></div>-->
+<!--              <span class="range-slider-handle range-slider-handle-left"></span>-->
+<!--              <span class="range-slider-handle range-slider-handle-right"></span>-->
+<!--            </div>-->
+<!--            <input type="range" class="range-slider-input-left" tabindex="0" min="1990" max="2025" step="1" value="1990">-->
+<!--            <input type="range" class="range-slider-input-right" tabindex="0" min="1990" max="2025" step="1" value="2025">-->
+<!--          </div>-->
+<!--          <div class="range-values-display" id="year-values-display">-->
+<!--            <span class="range-value" id="year-min-display">1990</span>-->
+<!--            <span class="range-value" id="year-max-display">2025</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Revenue Slider &ndash;&gt;-->
+<!--      <div class="filter-row">-->
+<!--        <div class="filter-label">Revenue:</div>-->
+<!--        <div>-->
+<!--          <div id="revenueRangeSlider" class="range-slider">-->
+<!--            <div>-->
+<!--              <div class="range-slider-val-range"></div>-->
+<!--              <span class="range-slider-handle range-slider-handle-left"></span>-->
+<!--              <span class="range-slider-handle range-slider-handle-right"></span>-->
+<!--            </div>-->
+<!--            <input type="range" class="range-slider-input-left" tabindex="0" min="0" max="3000000000" step="1000000" value="0">-->
+<!--            <input type="range" class="range-slider-input-right" tabindex="0" min="0" max="3000000000" step="1000000" value="3000000000">-->
+<!--          </div>-->
+<!--          <div class="range-values-display" id="revenue-values-display">-->
+<!--            <span class="range-value" id="revenue-min-display">$0</span>-->
+<!--            <span class="range-value" id="revenue-max-display">$3.0B</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="footnote">-->
+<!--        Note: Revenue slider values are in dollars. Display shows values in billions.-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Director and Country Filters with Clear Buttons &ndash;&gt;-->
+<!--      <div class="filter-row">-->
+<!--        <div class="filter-label">Director:</div>-->
+<!--        <div class="input-wrapper">-->
+<!--          <input type="text" id="filter-director" list="directors" placeholder="Filter by director...">-->
+<!--          <button class="clear-input" id="clear-director" title="Clear director filter">✕</button>-->
+<!--        </div>-->
+<!--        <datalist id="directors"></datalist>-->
+
+<!--        <div class="filter-label">Country:</div>-->
+<!--        <div class="input-wrapper">-->
+<!--          <input type="text" id="filter-country" list="countries" placeholder="Filter by country...">-->
+<!--          <button class="clear-input" id="clear-country" title="Clear country filter">✕</button>-->
+<!--        </div>-->
+<!--        <datalist id="countries"></datalist>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Stats summary section &ndash;&gt;-->
+<!--    <div class="stats-summary">-->
+<!--      <div class="stat-item">-->
+<!--        <div class="stat-value" id="total-films">0</div>-->
+<!--        <div class="stat-label">Films</div>-->
+<!--      </div>-->
+<!--      <div class="stat-item">-->
+<!--        <div class="stat-value" id="avg-revenue">$0</div>-->
+<!--        <div class="stat-label">Avg. Revenue</div>-->
+<!--      </div>-->
+<!--      <div class="stat-item">-->
+<!--        <div class="stat-value" id="lowest-revenue">$0</div>-->
+<!--        <div class="stat-label">Lowest Revenue</div>-->
+<!--      </div>-->
+<!--      <div class="stat-item">-->
+<!--        <div class="stat-value" id="highest-revenue">$0</div>-->
+<!--        <div class="stat-label">Highest Revenue</div>-->
+<!--      </div>-->
+<!--      <div class="stat-item">-->
+<!--        <div class="stat-value" id="most-recent">N/A</div>-->
+<!--        <div class="stat-label">Most Recent</div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <table id="films-table">-->
+<!--      <thead>-->
+<!--        <tr>-->
+<!--          <th data-sort="title">Title<span class="sort-indicator"></span></th>-->
+<!--          <th data-sort="release_year">Release Year<span class="sort-indicator"></span></th>-->
+<!--          <th data-sort="director">Director<span class="sort-indicator"></span></th>-->
+<!--          <th data-sort="box_office_revenue">Box Office Revenue<span class="sort-indicator"></span></th>-->
+<!--          <th data-sort="country">Country<span class="sort-indicator"></span></th>-->
+<!--        </tr>-->
+<!--      </thead>-->
+<!--      <tbody></tbody>-->
+<!--    </table>-->
+<!--  </div>-->
+<!--  <script>-->
+<!--    // Global filter values for sliders-->
+<!--    let yearMin = 1990, yearMax = 2025;-->
+<!--    let revenueMin = 0, revenueMax = 3000000000;-->
+<!--    let filmsData = [];-->
+<!--    let activeSorts = [];-->
+<!--    let filteredData = [];-->
+
+<!--    // Get display elements for range values-->
+<!--    const yearMinDisplay = document.getElementById('year-min-display');-->
+<!--    const yearMaxDisplay = document.getElementById('year-max-display');-->
+<!--    const revenueMinDisplay = document.getElementById('revenue-min-display');-->
+<!--    const revenueMaxDisplay = document.getElementById('revenue-max-display');-->
+
+<!--    // Get input elements and clear buttons-->
+<!--    const filterTitle = document.getElementById("filter-title");-->
+<!--    const filterDirector = document.getElementById("filter-director");-->
+<!--    const filterCountry = document.getElementById("filter-country");-->
+<!--    const clearTitle = document.getElementById("clear-title");-->
+<!--    const clearDirector = document.getElementById("clear-director");-->
+<!--    const clearCountry = document.getElementById("clear-country");-->
+
+<!--    // Add event listeners for clear buttons-->
+<!--    clearTitle.addEventListener("click", () => {-->
+<!--      filterTitle.value = "";-->
+<!--      applyFilters();-->
+<!--    });-->
+
+<!--    clearDirector.addEventListener("click", () => {-->
+<!--      filterDirector.value = "";-->
+<!--      applyFilters();-->
+<!--    });-->
+
+<!--    clearCountry.addEventListener("click", () => {-->
+<!--      filterCountry.value = "";-->
+<!--      applyFilters();-->
+<!--    });-->
+
+<!--    // Format revenue for billions display-->
+<!--    function formatRevenueBillions(revenue) {-->
+<!--      return "$" + (revenue / 1e9).toFixed(1) + "B";-->
+<!--    }-->
+
+<!--    // Populate director and country dropdowns from film data-->
+<!--    const directorDatalist = document.getElementById("directors");-->
+<!--    const countryDatalist = document.getElementById("countries");-->
+
+<!--    function populateDatalists(data) {-->
+<!--      const directorSet = new Set();-->
+<!--      const countrySet = new Set();-->
+
+<!--      data.forEach(film => {-->
+<!--        film.director.split(',').forEach(d => directorSet.add(d.trim()));-->
+<!--        film.country.split(',').forEach(c => countrySet.add(c.trim()));-->
+<!--      });-->
+
+<!--      directorDatalist.innerHTML = Array.from(directorSet)-->
+<!--        .sort()-->
+<!--        .map(d => `<option value="${d}">`)-->
+<!--        .join('');-->
+
+<!--      countryDatalist.innerHTML = Array.from(countrySet)-->
+<!--        .sort()-->
+<!--        .map(c => `<option value="${c}">`)-->
+<!--        .join('');-->
+<!--    }-->
+
+<!--    // Format revenue for table display (full number with commas)-->
+<!--    function formatRevenue(revenue) {-->
+<!--      const num = parseInt(revenue.replace(/\D/g, ''), 10);-->
+<!--      return "$" + num.toLocaleString();-->
+<!--    }-->
+
+<!--    // Parse revenue string to number-->
+<!--    function parseRevenue(revenue) {-->
+<!--      return parseInt(revenue.replace(/\D/g, ''), 10);-->
+<!--    }-->
+
+<!--    // Update statistics summary-->
+<!--    function updateStats(data) {-->
+<!--      const totalFilms = document.getElementById('total-films');-->
+<!--      const avgRevenue = document.getElementById('avg-revenue');-->
+<!--      const highestRevenue = document.getElementById('highest-revenue');-->
+<!--      const lowestRevenue = document.getElementById('lowest-revenue');-->
+<!--      const mostRecent = document.getElementById('most-recent');-->
+
+<!--      totalFilms.textContent = data.length;-->
+
+<!--      if (data.length > 0) {-->
+<!--        // Calculate average revenue-->
+<!--        const total = data.reduce((sum, film) => sum + parseRevenue(film.box_office_revenue), 0);-->
+<!--        const avg = total / data.length;-->
+<!--        avgRevenue.textContent = "$" + (avg / 1e9).toFixed(2) + "B";-->
+
+<!--        // Find highest revenue-->
+<!--        const highest = data.reduce((max, film) => {-->
+<!--          const rev = parseRevenue(film.box_office_revenue);-->
+<!--          return rev > max ? rev : max;-->
+<!--        }, 0);-->
+<!--        highestRevenue.textContent = "$" + (highest / 1e9).toFixed(2) + "B";-->
+
+<!--        // Find lowest revenue-->
+<!--        const lowest = data.reduce((min, film) => {-->
+<!--          const rev = parseRevenue(film.box_office_revenue);-->
+<!--          return (rev < min || min === 0) ? rev : min;-->
+<!--        }, 0);-->
+<!--        lowestRevenue.textContent = "$" + (lowest / 1e9).toFixed(2) + "B";-->
+
+<!--        // Find most recent film-->
+<!--        const latest = data.reduce((latest, film) => {-->
+<!--          return parseInt(film.release_year) > parseInt(latest) ? film.release_year : latest;-->
+<!--        }, "0");-->
+<!--        mostRecent.textContent = latest;-->
+<!--      } else {-->
+<!--        avgRevenue.textContent = "$0";-->
+<!--        highestRevenue.textContent = "$0";-->
+<!--        lowestRevenue.textContent = "$0";-->
+<!--        mostRecent.textContent = "N/A";-->
+<!--      }-->
+<!--    }-->
+
+<!--    // Render films table after filtering and sorting-->
+<!--    const tableBody = document.querySelector("#films-table tbody");-->
+<!--    function renderTable(data) {-->
+<!--      filteredData = [...data]; // Store filtered data for stats-->
+
+<!--      if(activeSorts.length > 0) {-->
+<!--        filteredData.sort((a, b) => {-->
+<!--          for (let sort of activeSorts) {-->
+<!--            let { column, order } = sort;-->
+<!--            let aVal = a[column], bVal = b[column];-->
+
+<!--            if(column === "release_year") {-->
+<!--              aVal = parseInt(aVal, 10);-->
+<!--              bVal = parseInt(bVal, 10);-->
+<!--            } else if(column === "box_office_revenue") {-->
+<!--              aVal = parseRevenue(aVal);-->
+<!--              bVal = parseRevenue(bVal);-->
+<!--            } else {-->
+<!--              aVal = aVal.toLowerCase();-->
+<!--              bVal = bVal.toLowerCase();-->
+<!--            }-->
+
+<!--            if(aVal < bVal) return -1 * order;-->
+<!--            if(aVal > bVal) return 1 * order;-->
+<!--          }-->
+<!--          return 0;-->
+<!--        });-->
+<!--      }-->
+
+<!--      tableBody.innerHTML = filteredData.map(film => `-->
+<!--        <tr>-->
+<!--          <td class="bold">${film.title}</td>-->
+<!--          <td>${film.release_year || "N/A"}</td>-->
+<!--          <td>${film.director}</td>-->
+<!--          <td>${formatRevenue(film.box_office_revenue)}</td>-->
+<!--          <td>${film.country}</td>-->
+<!--        </tr>-->
+<!--      `).join('');-->
+
+<!--      // Update stats after rendering-->
+<!--      updateStats(filteredData);-->
+<!--    }-->
+
+<!--    // Apply all filters based on text and slider values-->
+<!--    function applyFilters() {-->
+<!--      const titleFilter = filterTitle.value.toLowerCase();-->
+<!--      const directorFilter = filterDirector.value.trim().toLowerCase();-->
+<!--      const countryFilter = filterCountry.value.trim().toLowerCase();-->
+
+<!--      let filtered = filmsData.filter(film => {-->
+<!--        // Title filter-->
+<!--        if(!film.title.toLowerCase().includes(titleFilter)) return false;-->
+
+<!--        // Year filter-->
+<!--        if(parseInt(film.release_year, 10) < yearMin ||-->
+<!--           parseInt(film.release_year, 10) > yearMax) return false;-->
+
+<!--        // Revenue filter-->
+<!--        const filmRevenue = parseRevenue(film.box_office_revenue);-->
+<!--        if(filmRevenue < revenueMin || filmRevenue > revenueMax) return false;-->
+
+<!--        // Director filter-->
+<!--        if(directorFilter) {-->
+<!--          const directors = film.director.split(',').map(d => d.trim().toLowerCase());-->
+<!--          if(!directors.some(d => d.includes(directorFilter))) return false;-->
+<!--        }-->
+
+<!--        // Country filter-->
+<!--        if(countryFilter) {-->
+<!--          const countries = film.country.split(',').map(c => c.trim().toLowerCase());-->
+<!--          if(!countries.some(c => c.includes(countryFilter))) return false;-->
+<!--        }-->
+
+<!--        return true;-->
+<!--      });-->
+
+<!--      renderTable(filtered);-->
+<!--    }-->
+
+<!--    // Add event listeners for text filters-->
+<!--    [filterTitle, filterDirector, filterCountry].forEach(el => {-->
+<!--      el.addEventListener("input", applyFilters);-->
+<!--    });-->
+
+<!--    // Multi-column sorting functions-->
+<!--    function updateSort(column) {-->
+<!--      let existing = activeSorts.find(s => s.column === column);-->
+
+<!--      if(!existing) {-->
+<!--        activeSorts.push({ column, order: 1 });-->
+<!--      } else if(existing.order === 1) {-->
+<!--        existing.order = -1;-->
+<!--      } else {-->
+<!--        activeSorts = activeSorts.filter(s => s.column !== column);-->
+<!--      }-->
+
+<!--      updateSortIndicators();-->
+<!--      applyFilters();-->
+<!--    }-->
+
+<!--    function updateSortIndicators() {-->
+<!--      document.querySelectorAll("thead th").forEach(th => {-->
+<!--        const column = th.getAttribute("data-sort");-->
+<!--        const sortIndicator = th.querySelector(".sort-indicator");-->
+<!--        const sortObj = activeSorts.find(s => s.column === column);-->
+
+<!--        sortIndicator.textContent = sortObj-->
+<!--          ? (sortObj.order === 1 ? "▲" : "▼")-->
+<!--          : "";-->
+<!--      });-->
+<!--    }-->
+
+<!--    document.querySelectorAll("thead th").forEach(th => {-->
+<!--      th.addEventListener("click", () => updateSort(th.getAttribute("data-sort")));-->
+<!--    });-->
+
+<!--    // Custom two-handle slider initializer-->
+<!--    function initCustomSlider(sliderId, minValue, maxValue, callback, isRevenue) {-->
+<!--      const container = document.getElementById(sliderId);-->
+<!--      const inputLeft = container.querySelector('.range-slider-input-left');-->
+<!--      const inputRight = container.querySelector('.range-slider-input-right');-->
+<!--      const valRange = container.querySelector('.range-slider-val-range');-->
+<!--      const handleLeft = container.querySelector('.range-slider-handle-left');-->
+<!--      const handleRight = container.querySelector('.range-slider-handle-right');-->
+
+<!--      // Get display elements-->
+<!--      const minDisplay = isRevenue ? revenueMinDisplay : yearMinDisplay;-->
+<!--      const maxDisplay = isRevenue ? revenueMaxDisplay : yearMaxDisplay;-->
+
+<!--      // Make sure inputs have the correct min/max values-->
+<!--      inputLeft.min = minValue;-->
+<!--      inputLeft.max = maxValue;-->
+<!--      inputRight.min = minValue;-->
+<!--      inputRight.max = maxValue;-->
+
+<!--      // Initial values-->
+<!--      inputLeft.value = minValue;-->
+<!--      inputRight.value = maxValue;-->
+
+<!--      function updateSlider() {-->
+<!--        let leftVal = parseInt(inputLeft.value);-->
+<!--        let rightVal = parseInt(inputRight.value);-->
+
+<!--        // Prevent overlap-->
+<!--        if (leftVal > rightVal - 1) {-->
+<!--          leftVal = rightVal - 1;-->
+<!--          inputLeft.value = leftVal;-->
+<!--        }-->
+
+<!--        const percent = (val) => ((val - minValue) / (maxValue - minValue)) * 100;-->
+
+<!--        const leftPercent = percent(leftVal);-->
+<!--        const rightPercent = percent(rightVal);-->
+
+<!--        // Update the visual range-->
+<!--        valRange.style.left = leftPercent + "%";-->
+<!--        valRange.style.width = (rightPercent - leftPercent) + "%";-->
+
+<!--        // Update handles positions-->
+<!--        handleLeft.style.left = leftPercent + "%";-->
+<!--        handleRight.style.left = rightPercent + "%";-->
+
+<!--        // Update display values-->
+<!--        if (isRevenue) {-->
+<!--          minDisplay.textContent = formatRevenueBillions(leftVal);-->
+<!--          maxDisplay.textContent = formatRevenueBillions(rightVal);-->
+<!--        } else {-->
+<!--          minDisplay.textContent = leftVal;-->
+<!--          maxDisplay.textContent = rightVal;-->
+<!--        }-->
+
+<!--        // Call the callback with updated values-->
+<!--        callback(leftVal, rightVal);-->
+<!--      }-->
+
+<!--      // Add proper event listeners for both inputs-->
+<!--      inputLeft.addEventListener('input', updateSlider);-->
+<!--      inputRight.addEventListener('input', updateSlider);-->
+
+<!--      // Add mouse and touch events for handles-->
+<!--      [handleLeft, handleRight].forEach((handle, index) => {-->
+<!--        const input = index === 0 ? inputLeft : inputRight;-->
+<!--        let dragging = false;-->
+
+<!--        // Mouse events-->
+<!--        handle.addEventListener('mousedown', (e) => {-->
+<!--          dragging = true;-->
+<!--          e.preventDefault();-->
+<!--        });-->
+
+<!--        document.addEventListener('mousemove', (e) => {-->
+<!--          if (!dragging) return;-->
+
+<!--          const rect = container.getBoundingClientRect();-->
+<!--          const pos = (e.clientX - rect.left) / rect.width;-->
+<!--          const newValue = Math.round(minValue + pos * (maxValue - minValue));-->
+
+<!--          input.value = Math.max(minValue, Math.min(maxValue, newValue));-->
+<!--          updateSlider();-->
+<!--          e.preventDefault();-->
+<!--        });-->
+
+<!--        document.addEventListener('mouseup', () => {-->
+<!--          dragging = false;-->
+<!--        });-->
+
+<!--        // Touch events for mobile-->
+<!--        handle.addEventListener('touchstart', (e) => {-->
+<!--          dragging = true;-->
+<!--          e.preventDefault();-->
+<!--        });-->
+
+<!--        document.addEventListener('touchmove', (e) => {-->
+<!--          if (!dragging) return;-->
+
+<!--          const rect = container.getBoundingClientRect();-->
+<!--          const pos = (e.touches[0].clientX - rect.left) / rect.width;-->
+<!--          const newValue = Math.round(minValue + pos * (maxValue - minValue));-->
+
+<!--          input.value = Math.max(minValue, Math.min(maxValue, newValue));-->
+<!--          updateSlider();-->
+<!--          e.preventDefault();-->
+<!--        });-->
+
+<!--        document.addEventListener('touchend', () => {-->
+<!--          dragging = false;-->
+<!--        });-->
+<!--      });-->
+
+<!--      // Initial update-->
+<!--      updateSlider();-->
+<!--    }-->
+
+<!--    // Initialize the Year slider-->
+<!--    initCustomSlider("yearRangeSlider", 1990, 2025, (minVal, maxVal) => {-->
+<!--      yearMin = minVal;-->
+<!--      yearMax = maxVal;-->
+<!--      applyFilters();-->
+<!--    }, false);-->
+
+<!--    // Initialize the Revenue slider-->
+<!--    initCustomSlider("revenueRangeSlider", 0, 3000000000, (minVal, maxVal) => {-->
+<!--      revenueMin = minVal;-->
+<!--      revenueMax = maxVal;-->
+<!--      applyFilters();-->
+<!--    }, true);-->
+
+<!--    // Sample data if fetch fails-->
+<!--    const sampleData = [-->
+<!--      {-->
+<!--        "title": "Avatar",-->
+<!--        "release_year": "2009",-->
+<!--        "director": "James Cameron",-->
+<!--        "box_office_revenue": "$2,847,246,203",-->
+<!--        "country": "United States"-->
+<!--      },-->
+<!--      {-->
+<!--        "title": "Avengers: Endgame",-->
+<!--        "release_year": "2019",-->
+<!--        "director": "Anthony Russo, Joe Russo",-->
+<!--        "box_office_revenue": "$2,797,501,328",-->
+<!--        "country": "United States"-->
+<!--      },-->
+<!--      {-->
+<!--        "title": "Titanic",-->
+<!--        "release_year": "1997",-->
+<!--        "director": "James Cameron",-->
+<!--        "box_office_revenue": "$2,187,463,944",-->
+<!--        "country": "United States"-->
+<!--      },-->
+<!--      {-->
+<!--        "title": "Star Wars: The Force Awakens",-->
+<!--        "release_year": "2015",-->
+<!--        "director": "J.J. Abrams",-->
+<!--        "box_office_revenue": "$2,068,223,624",-->
+<!--        "country": "United States"-->
+<!--      },-->
+<!--      {-->
+<!--        "title": "Avengers: Infinity War",-->
+<!--        "release_year": "2018",-->
+<!--        "director": "Anthony Russo, Joe Russo",-->
+<!--        "box_office_revenue": "$2,048,359,754",-->
+<!--        "country": "United States"-->
+<!--      }-->
+<!--    ];-->
+
+<!--    // Load films data and initialize table and dropdowns-->
+<!--    fetch("temp/films.json")-->
+<!--      .then(response => response.json())-->
+<!--      .then(data => {-->
+<!--        filmsData = data;-->
+<!--        populateDatalists(filmsData);-->
+<!--        renderTable(filmsData);-->
+<!--      })-->
+<!--      .catch(error => {-->
+<!--        console.error("Error loading films data:", error);-->
+<!--        // Use sample data as fallback-->
+<!--        filmsData = sampleData;-->
+<!--        populateDatalists(filmsData);-->
+<!--        renderTable(filmsData);-->
+<!--      });-->
+<!--  </script>-->
+<!--</body>-->
+<!--</html>-->
