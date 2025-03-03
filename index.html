@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Highest Grossing Films💲</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header><h1>Highest Grossing Films💲</h1></header>
+  <div class="container">
+    <div class="filter-container">
+      <!-- Title Filter with Clear Button -->
+      <div class="filter-row">
+        <div class="filter-label">Title:</div>
+        <div class="input-wrapper">
+          <input type="text" id="filter-title" placeholder="Filter by title...">
+          <button class="clear-input" id="clear-title" title="Clear title filter">✕</button>
+        </div>
+      </div>
+
+      <!-- Year Slider -->
+      <div class="filter-row">
+        <div class="filter-label">Year:</div>
+        <div>
+          <div id="yearRangeSlider" class="range-slider">
+            <div>
+              <div class="range-slider-val-range"></div>
+              <span class="range-slider-handle range-slider-handle-left"></span>
+              <span class="range-slider-handle range-slider-handle-right"></span>
+            </div>
+            <input type="range" class="range-slider-input-left" tabindex="0" min="1990" max="2025" step="1" value="1990">
+            <input type="range" class="range-slider-input-right" tabindex="0" min="1990" max="2025" step="1" value="2025">
+          </div>
+          <div class="range-values-display" id="year-values-display">
+            <span class="range-value" id="year-min-display">1990</span>
+            <span class="range-value" id="year-max-display">2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Slider -->
+      <div class="filter-row">
+        <div class="filter-label">Revenue:</div>
+        <div>
+          <div id="revenueRangeSlider" class="range-slider">
+            <div>
+              <div class="range-slider-val-range"></div>
+              <span class="range-slider-handle range-slider-handle-left"></span>
+              <span class="range-slider-handle range-slider-handle-right"></span>
+            </div>
+            <input type="range" class="range-slider-input-left" tabindex="0" min="0" max="3000000000" step="1000000" value="0">
+            <input type="range" class="range-slider-input-right" tabindex="0" min="0" max="3000000000" step="1000000" value="3000000000">
+          </div>
+          <div class="range-values-display" id="revenue-values-display">
+            <span class="range-value" id="revenue-min-display">$0</span>
+            <span class="range-value" id="revenue-max-display">$3.0B</span>
+          </div>
+        </div>
+      </div>
+      <div class="footnote">
+        Note: Revenue slider values are in dollars. Display shows values in billions.
+      </div>
+
+      <!-- Director and Country Filters with Clear Buttons -->
+      <div class="filter-row">
+        <div class="filter-label">Director:</div>
+        <div class="input-wrapper">
+          <input type="text" id="filter-director" list="directors" placeholder="Filter by director...">
+          <button class="clear-input" id="clear-director" title="Clear director filter">✕</button>
+        </div>
+        <datalist id="directors"></datalist>
+
+        <div class="filter-label">Country:</div>
+        <div class="input-wrapper">
+          <input type="text" id="filter-country" list="countries" placeholder="Filter by country...">
+          <button class="clear-input" id="clear-country" title="Clear country filter">✕</button>
+        </div>
+        <datalist id="countries"></datalist>
+      </div>
+    </div>
+
+    <!-- Stats summary section -->
+    <div class="stats-summary">
+      <div class="stat-item">
+        <div class="stat-value" id="total-films">0</div>
+        <div class="stat-label">Films</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="avg-revenue">$0</div>
+        <div class="stat-label">Avg. Revenue</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="lowest-revenue">$0</div>
+        <div class="stat-label">Lowest Revenue</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="highest-revenue">$0</div>
+        <div class="stat-label">Highest Revenue</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="most-recent">N/A</div>
+        <div class="stat-label">Most Recent</div>
+      </div>
+    </div>
+
+    <table id="films-table">
+      <thead>
+        <tr>
+          <th data-sort="title">Title<span class="sort-indicator"></span></th>
+          <th data-sort="release_year">Release Year<span class="sort-indicator"></span></th>
+          <th data-sort="director">Director<span class="sort-indicator"></span></th>
+          <th data-sort="box_office_revenue">Box Office Revenue<span class="sort-indicator"></span></th>
+          <th data-sort="country">Country<span class="sort-indicator"></span></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/slider.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
