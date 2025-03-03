@@ -35,9 +35,14 @@ function initCustomSlider(sliderId, minValue, maxValue, callback, isRevenue) {
     let leftVal = parseInt(inputLeft.value);
     let rightVal = parseInt(inputRight.value);
 
-    // Prevent overlap
-    if (leftVal > rightVal - 1) {
-      leftVal = rightVal - 1;
+    // Ensure values don't go below minimum
+    leftVal = Math.max(leftVal, minValue);
+    rightVal = Math.max(rightVal, minValue);
+
+    // Prevent overlap but allow equal values
+    // Changed from leftVal > rightVal - 1 to leftVal > rightVal
+    if (leftVal > rightVal) {
+      leftVal = rightVal;
       inputLeft.value = leftVal;
     }
 
